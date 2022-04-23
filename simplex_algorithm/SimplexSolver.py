@@ -1,4 +1,3 @@
-import functools
 import time
 import numpy as np
 from simplex_algorithm.Interaction import Interaction
@@ -26,15 +25,17 @@ class SimplexSolver():
         self.matrix_c = np.reshape(np.array([item for item in matrix_c]), (1, len(matrix_c)))
 
     
-    def start(self):
-        if(self.has_slack_var == False):
+    def start(self, set_B, set_N):
+        if self.has_slack_var is False:
             self.add_slack_variable()
         
         start = time.time()
 
-        while(self.is_done is False and self.iterations <= self.max_iteractions):
+        while self.is_done is False and self.iterations <= self.max_iteractions:
             print(f'Starting iteration {self.iterations}')
-            self.make_iteration()
+            self.make_iteration(set_B, set_N)
+            set_B = [2,3,4]
+            Set_N = [0, 1]
             print(f'Z score:{self.previous_interactions[-1].z_value}')
             print(f'XB matrix: {self.previous_interactions[-1].matrix_XB}')
             self.iterations += 1
@@ -48,15 +49,17 @@ class SimplexSolver():
         pass
         
 
-    def make_iteration(self):
-        set_B = [2,3,4] #todo descobrir como calcular isso dinamicamente
-        set_N = [0, 1]
-
-        matrix_B = self.matrix_a[:, set_B]
-        matrix_N = self.matrix_a[:, set_N]
-        matrix_CB = self.matrix_c[:, set_B]
-        self.calculate(matrix_B=matrix_B, matrix_CB=matrix_CB, set_B = set_B, set_N = set_N, matrix_N = matrix_N)
-        
+    def make_iteration(self, set_B, set_N):
+        try:
+            matrix_B = self.matrix_a[:, set_B]
+            matrix_N = self.matrix_a[:, set_N]
+            matrix_CB = self.matrix_c[:, set_B]
+            self.calculate(matrix_B=matrix_B, matrix_CB=matrix_CB, set_B=set_B, set_N=set_N, matrix_N=matrix_N)
+            if self.is_done is False:
+                self.calculate_leaving_variable()
+                self.calculate_alpha()
+        except Exception as ex:
+            print(f'Failed on make_iteration method\n{ex}')
 
     def calculate(self, matrix_B, matrix_CB, set_B, set_N, matrix_N):
         b_inverted = np.linalg.inv(matrix_B)
@@ -66,11 +69,13 @@ class SimplexSolver():
 
         list_z_index = [np.matmul(u, self.matrix_a[:, index])[0] - self.matrix_c[:, index][0] for index in set_N]
 
-
         self.is_done = all(i >= 0 for i in list_z_index)
         self.previous_interactions.append(Interaction(matrix_B, set_B, matrix_N, set_N, xb, z))
 
     def calculate_leaving_variable(self):
+        pass
+
+    def calculate_alpha(self, l_set):
         pass
 
     def generate_report(self):

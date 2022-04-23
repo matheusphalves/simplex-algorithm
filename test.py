@@ -10,4 +10,4 @@ matrix_C = [60, 40, 0, 0, 0]
 
 simplex = SimplexSolver(matrix_a=matrix_A, matrix_b=matrix_B, matrix_c=matrix_C, max_iteractions=1)
 
-simplex.start()
+simplex.start([2,3,4], [0, 1])
