@@ -33,8 +33,8 @@ class SimplexSolver():
         start = time.time()
 
         while self.is_done is False and self.iterations <= self.max_iteractions:
-            print(f'Starting iteration {self.iterations}')
-            b_inverted, list_z_index, matrix_XB = self.make_iteration(set_B, set_N)
+            print(f'Starting iteraction {self.iterations}')
+            b_inverted, list_z_index, matrix_XB = self.make_iteraction(set_B, set_N)
             print(f'Z score:{self.previous_interactions[-1].z_value}')
             self.iterations += 1
             if self.is_done is False:
@@ -47,7 +47,7 @@ class SimplexSolver():
                 set_N = self.swap_matrices_index(set_N, index_entering, index_leaving)
 
         end = time.time()
-        print(f'Simplex Iteractions finished: {end-start}')
+        print(f'Simplex Iteractions has finished: {end-start}')
         self.generate_report()
         return self.previous_interactions
 
@@ -65,14 +65,14 @@ class SimplexSolver():
         return aux
 
 
-    def make_iteration(self, set_B, set_N):
+    def make_iteraction(self, set_B, set_N):
         try:
             matrix_B = self.matrix_a[:, set_B]
             matrix_N = self.matrix_a[:, set_N]
             matrix_CB = self.matrix_c[:, set_B]
             return self.calculate(matrix_B=matrix_B, matrix_CB=matrix_CB, set_B=set_B, set_N=set_N, matrix_N=matrix_N)
         except Exception as ex:
-            print(f'Failed on make_iteration method\n{ex}')
+            print(f'Failed on make_iteraction method\n{ex}')
 
     def calculate(self, matrix_B, matrix_CB, set_B, set_N, matrix_N):
         b_inverted = np.linalg.inv(matrix_B)
